@@ -9,8 +9,8 @@ fun main() {
     println("Valid passports with valid fields: ${passports.count { it.hasRequiredFields() && it.hasValidFields() }}")
 }
 
-fun readPassports(name: String = "04.txt"): List<Map<String, String>> {
-    val contents = Utils::class.java.getResource(name).openStream().bufferedReader().readText().trim()
+fun readPassports(): List<Map<String, String>> {
+    val contents = readFromResource("04.txt")
     val chunks: List<String> = contents.split("\n\n")
     return chunks.map { it.toPassport() }
 }
