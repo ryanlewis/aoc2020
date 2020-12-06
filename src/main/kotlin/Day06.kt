@@ -4,24 +4,10 @@
  * https://adventofcode.com/2020/day/6
  */
 fun main() {
-    val groups = readLinesFromResource("06.txt", skipBlankLines = false).partitionedBySeparator { it.isBlank() }
-    println("Sum of answer set sizes: ${groups.map { it.toAnswerSet() }.sumOf { it.size }}")
-    println("Sum of answer set intersect sizes: ${groups.map { it.toAnswerIntersect() }.sumOf { it.size }}")
+    val groups = readFromResource("06.txt").split("\n\n").map { g -> g.split('\n').map { it.toSet() } }
+    println("Sum of answer set sizes: ${groups.map { it.answersUnion() }.sumOf { it.size }}")
+    println("Sum of answer set intersect sizes: ${groups.map { it.answersIntersect() }.sumOf { it.size }}")
 }
 
-private fun <T> List<T>.partitionedBySeparator(separator: (T) -> Boolean): List<List<T>> {
-    var remaining = this
-    val sequence = generateSequence {
-        if (remaining.isEmpty()) return@generateSequence null
-        val index = remaining.indexOfFirst(separator).let { if (it == -1) remaining.size else it }
-        remaining.slice(0 until index).also { remaining = remaining.drop(index + 1) }
-    }
-    return sequence.toList()
-}
-
-private fun List<String>.toAnswerSet() = this.flatMap { answers -> answers.toList() }.toSet()
-
-private fun List<String>.toAnswerIntersect(): Set<Char> {
-    val answerSet = this.toAnswerSet()
-    return map { a -> a.toList() }.fold(answerSet) { acc, entry -> acc.intersect(entry) }
-}
+private fun Iterable<Set<Char>>.answersUnion() = this.reduce { a, b -> a.union(b) }
+private fun Iterable<Set<Char>>.answersIntersect() = this.reduce { a, b -> a.intersect(b) }
